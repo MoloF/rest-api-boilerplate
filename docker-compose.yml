@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+    # 1-ый вариант через локальную сборку
+    server:
+        container_name: server
+        build: ./
+        restart: always
+
+    # 2-ой вариант через container registry в Gitlab.com
+    # server:
+    #     container_name: server
+    #     image: registry.gitlab.com/project_name/server
+    #     restart: always
+
+    proxy:
+        container_name: proxy
+        image: nginx:1.19.3-alpine
+        restart: always
+        command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+        volumes:
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        ports:
+            - 80:80
